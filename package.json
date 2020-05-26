@@ -69,6 +69,7 @@
     "rollup-plugin-terser": "^6.1.0",
     "sapper": "^0.27.13",
     "set-value": ">=3.0.2",
+    "stylelint-config-recommended": "^3.0.0",
     "svelte": "^3.22.3",
     "svelte-transitions": "^1.2.0",
     "tailwindcss": "^1.4.6"
