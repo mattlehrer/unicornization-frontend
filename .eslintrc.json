@@ -13,5 +13,11 @@
     "browser": true,
     "node": true
   },
-  "plugins": ["prettier", "svelte3"]
+  "plugins": ["prettier", "svelte3"],
+  "overrides": [
+    {
+      "files": ["*.svelte"],
+      "processor": "svelte3/svelte3"
+    }
+  ]
 }

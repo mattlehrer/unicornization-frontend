@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
@@ -8,6 +9,25 @@ import svelte from 'rollup-plugin-svelte';
 import { terser } from 'rollup-plugin-terser';
 import config from 'sapper/config/rollup.js';
 import pkg from './package.json';
+
+const result = dotenv.config();
+if (result.error) {
+  console.warn('Cannot parse expected .env file: ' + result.error);
+  result.parsed = {};
+}
+const processEnvVariablesToBeReplaced = Object.keys(result.parsed).reduce(
+  (acc, n) => {
+    acc[`process.env.${n}`] = JSON.stringify(result.parsed[n]);
+    return acc;
+  },
+  {}
+);
+if (Object.keys(processEnvVariablesToBeReplaced).length !== 0) {
+  console.log(
+    "The following variables read from file .env will be replaced using '@rollup/plugin-replace':",
+    processEnvVariablesToBeReplaced
+  );
+}
 
 const mode = process.env.NODE_ENV;
 const dev = mode === 'development';
@@ -33,10 +53,12 @@ export default {
   client: {
     input: config.client.input(),
     output: config.client.output(),
+    preserveEntrySignatures: false,
     plugins: [
       replace({
         'process.browser': true,
         'process.env.NODE_ENV': JSON.stringify(mode),
+        ...processEnvVariablesToBeReplaced,
       }),
       svelte({
         dev,

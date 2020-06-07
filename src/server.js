@@ -1,10 +1,10 @@
-import config from './config';
-
-import sirv from 'sirv';
-import polka from 'polka';
-import compression from 'compression';
 import * as sapper from '@sapper/server';
-
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
+import polka from 'polka';
+import sirv from 'sirv';
+import config from './config';
 import './styles/index.css';
 
 const { PORT, NODE_ENV } = process.env;
@@ -14,12 +14,22 @@ polka()
   .use(
     compression({ threshold: 0 }),
     sirv('static', { dev }),
-    sapper.middleware({
-      session: (req, res) => ({
-        config
-      })
-    })
+    cookieParser(config.COOKIE_SECRET),
+    (req, res, next) => {
+      let parsed;
+      if (req.cookies[config.COOKIE_NAME])
+        parsed = JSON.parse(
+          Buffer.from(req.cookies[config.COOKIE_NAME], 'base64').toString()
+        );
+      const token = parsed ? parsed.jwt : undefined;
+      const profile = token ? jwt.decode(token) : false;
+      return sapper.middleware({
+        session: (req, res) => ({
+          user: profile,
+        }),
+      })(req, res, next);
+    }
   )
-  .listen(PORT, err => {
+  .listen(PORT, (err) => {
     if (err) console.log('error', err);
   });

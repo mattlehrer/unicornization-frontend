@@ -1,24 +1,21 @@
-<script context="module">
-  export async function preload({ params }) {
-    const res = await this.fetch('https://randomuser.me/api/?results=4');
-    const users = await res.json();
-
-    return {
-      users: users.results
-    };
-  }
-</script>
-
 <script>
-  import ProfileCard from '../components/ProfileCard.svelte';
-
-  export let users;
+  const apiBaseUrl = process.env.API_BASE_URL;
 </script>
 
 <svelte:head>
   <title>Sapper + TailwindCSS Starter</title>
 </svelte:head>
 
-{#each users as user}
-  <ProfileCard {user} />
-{/each}
+<div class="container mx-auto my-5">
+  <a class="btn btn-primary" href="/login">User/pass login</a>
+
+  <a class="btn btn-primary" href="{apiBaseUrl}/auth/google">Google login</a>
+
+  <a class="btn btn-primary" href="{apiBaseUrl}/auth/facebook">
+    Facebook login
+  </a>
+
+  <a class="btn btn-primary" href="{apiBaseUrl}/auth/github">Github login</a>
+
+  <a class="btn btn-primary" href="{apiBaseUrl}/auth/twitter">Twitter login</a>
+</div>
