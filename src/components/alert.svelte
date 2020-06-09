@@ -1,4 +1,8 @@
 <script>
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
+
   export let title;
   export let content;
   export let type;
@@ -18,11 +22,19 @@
       color = 'blue';
       break;
     }
+    case 'success': {
+      color = 'green';
+      break;
+    }
     default: {
       color = 'blue';
       break;
     }
   }
+
+  const close = (e) => {
+    dispatch('close', e.detail);
+  };
 </script>
 
 <div
@@ -31,7 +43,7 @@
   role="alert">
   <strong class="font-bold">{title}</strong>
   <p class="pr-3 sm:inline">{content}</p>
-  <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+  <span on:click={close} class="absolute top-0 bottom-0 right-0 px-4 py-3">
     <svg
       class="fill-current h-6 w-6 text-{color}-500"
       role="button"

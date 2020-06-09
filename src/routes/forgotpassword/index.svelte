@@ -1,4 +1,7 @@
 <script>
+  import Alert from '../../components/alert.svelte';
+  import { slide } from 'svelte/transition';
+
   let email = '';
   let sent = false;
 
@@ -26,13 +29,9 @@
 </script>
 
 {#if !sent}
-  <div class="container mx-auto">
+  <div
+    class="container mx-auto out:slide|local={{ delay: 200, duration: 1000 }}">
     <div class="flex justify-center px-6 my-12">
-      <!-- <div class="flex w-full xl:w-3/4 lg:w-11/12">
-        <div
-          class="hidden w-full h-auto bg-gray-400 bg-cover rounded-l-lg lg:block lg:w-1/2"
-          style="background-image:
-          url('https://source.unsplash.com/oWTW-jNGl9I/600x800')" /> -->
       <div class="w-full p-5 bg-white rounded-lg lg:w-1/2 lg:rounded-l-none">
         <div class="px-8 mb-4 text-center">
           <h3 class="pt-4 mb-2 text-2xl">Forgot Your Password?</h3>
@@ -59,12 +58,8 @@
               placeholder="Enter Email Address..."
               bind:value={email} />
           </div>
-          <div class="mb-6 text-center">
-            <button
-              class="w-full px-4 py-2 font-bold text-white bg-red-500
-              rounded-full hover:bg-red-700 focus:outline-none
-              focus:shadow-outline"
-              type="submit">
+          <div class="mb-6">
+            <button class="btn btn-primary" type="submit">
               Reset Password
             </button>
           </div>
@@ -90,4 +85,12 @@
       <!-- </div> -->
     </div>
   </div>
-{:else}Recover email sent{/if}
+{:else}
+  <div class="w-full max-w-lg mx-auto my-6" out:slide|local={{ duration: 350 }}>
+    <Alert
+      on:close={() => (window.location.href = '/')}
+      type="success"
+      title="Password reset email sent!"
+      content="Please check your inbox." />
+  </div>
+{/if}

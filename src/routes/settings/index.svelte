@@ -1,4 +1,5 @@
 <script>
+  import { slide } from 'svelte/transition';
   import { stores } from '@sapper/app';
   import { onMount } from 'svelte';
   import isUUID from 'validator/es/lib/isUUID';
@@ -10,7 +11,7 @@
   const apiBaseUrl = process.env.API_BASE_URL;
 
   let mounted = false;
-  let usernameIsUUID = false;
+  let shouldUsernameUUIDAlert = false;
   let username = $session.user.username;
   let email = $session.user.email;
   let password;
@@ -29,9 +30,10 @@
   })
     .then((res) => res.json())
     .then((data) => {
+      console.log(data);
       ({ username, email } = data);
-      if (isUUID(username)) {
-        usernameIsUUID = true;
+      if (username && isUUID(username)) {
+        shouldUsernameUUIDAlert = true;
         username = '';
       }
     })
@@ -41,8 +43,8 @@
     if (!$session.user) {
       window.location.href = '/signup';
     } else {
-      if (isUUID(username)) {
-        usernameIsUUID = true;
+      if (username && isUUID(username)) {
+        shouldUsernameUUIDAlert = true;
         username = '';
       }
       mounted = true;
@@ -71,21 +73,23 @@
     }).catch((err) => console.log({ err }));
     console.log({ response });
     if (response.ok) {
-      usernameIsUUID = isUUID(username || $session.user.username);
+      shouldUsernameUUIDAlert = isUUID(username || $session.user.username);
     }
   };
 
   $: validate =
     (password && newPassword && newPassword === reenterNewPassword) ||
     (email && isEmail(email) && email !== $session.user.email) ||
-    (usernameIsUUID && username) ||
     (username && username !== $session.user.username);
 </script>
 
 {#if mounted}
-  {#if usernameIsUUID}
-    <div class="w-full max-w-md mx-auto my-6">
+  {#if shouldUsernameUUIDAlert}
+    <div
+      class="w-full max-w-md mx-auto my-6"
+      out:slide|local={{ duration: 350 }}>
       <Alert
+        on:close={() => (shouldUsernameUUIDAlert = false)}
         type="warn"
         title="Heads up!"
         content="Please pick a username to set up a profile." />

@@ -1,9 +1,14 @@
 <script>
+  import { slide } from 'svelte/transition';
+  import { passwordRule, isStrongPassword } from '../../utils/password';
+
   const apiBaseUrl = process.env.API_BASE_URL;
 
-  let username = '';
-  let email = '';
-  let password;
+  let username;
+  let email;
+  let password = '';
+  let confirmPassword = '';
+  let warn = false;
 
   export let handleSubmit = async function (event) {
     if (!event.target.checkValidity()) {
@@ -21,7 +26,13 @@
       body: JSON.stringify({ username, email, password }),
     }).catch((err) => console.log({ err }));
     console.log({ response });
-    if (response.ok) window.location.href = 'login/success';
+    if (response.ok) window.location.href = '/';
+    // TODO: deal with errors; dup username; dup email; other
+  };
+
+  const shouldWarn = () => {
+    if (!isStrongPassword(password)) warn = true;
+    else warn = false;
   };
 </script>
 
@@ -61,16 +72,40 @@
           Password
         </label>
         <input
-          class="w-full px-3 py-2 leading-tight text-gray-700 border rounded
-          shadow appearance-none focus:outline-none focus:shadow-outline"
+          class="w-full px-3 py-2 text-sm leading-tight text-gray-700 border
+          rounded shadow appearance-none focus:outline-none focus:shadow-outline
+          {warn ? 'border-red-500' : ''}"
           id="password"
           type="password"
-          placeholder="******************"
+          placeholder="*************"
+          on:blur={shouldWarn}
           bind:value={password} />
+        {#if !isStrongPassword(password)}
+          <p
+            class="px-3 pt-2 text-xs italic {warn ? 'text-red-500' : 'text-gray-600'}"
+            transition:slide|local={{ duration: 300 }}>
+            {passwordRule}
+          </p>
+        {/if}
+      </div>
+      <div class="mb-4">
+        <label
+          class="block mb-2 text-sm font-bold text-gray-700"
+          for="confirmPassword">
+          Confirm Password
+        </label>
+        <input
+          class="w-full px-3 py-2 text-sm leading-tight text-gray-700 border
+          rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+          id="confirmPassword"
+          type="password"
+          placeholder="*************"
+          bind:value={confirmPassword} />
       </div>
       <div class="flex flex-row items-center">
         <button
           class="flex-shrink-0 btn btn-primary btn-primary:hover btn:focus"
+          disabled={!(isStrongPassword(password) && password === confirmPassword)}
           type="submit">
           Sign Up
         </button>
