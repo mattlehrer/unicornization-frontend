@@ -75,6 +75,7 @@
     "set-value": ">=3.0.2",
     "stylelint-config-recommended": "^3.0.0",
     "svelte": "^3.23.1",
+    "svelte-scrollto": "^0.1.1",
     "svelte-transitions": "^1.2.0",
     "tailwindcss": "^1.4.6"
   }

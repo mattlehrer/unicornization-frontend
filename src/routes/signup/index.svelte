@@ -1,5 +1,7 @@
 <script>
   import { slide } from 'svelte/transition';
+  import * as animateScroll from 'svelte-scrollto';
+  import Alert from '../../components/alert.svelte';
   import { passwordRule, isStrongPassword } from '../../utils/password';
 
   const apiBaseUrl = process.env.API_BASE_URL;
@@ -9,6 +11,7 @@
   let password = '';
   let confirmPassword = '';
   let warn = false;
+  let alertMsg = '';
 
   export let handleSubmit = async function (event) {
     if (!event.target.checkValidity()) {
@@ -27,7 +30,13 @@
     }).catch((err) => console.log({ err }));
     console.log({ response });
     if (response.ok) window.location.href = '/';
-    // TODO: deal with errors; dup username; dup email; other
+    else {
+      // TODO: deal with errors; dup username; dup email; other
+      const error = await response.json();
+      console.log(error);
+      alertMsg = error.detail;
+      animateScroll.scrollToTop({ duration: 300 });
+    }
   };
 
   const shouldWarn = () => {
@@ -35,6 +44,16 @@
     else warn = false;
   };
 </script>
+
+{#if alertMsg}
+  <div class="w-full max-w-md mx-auto my-6" out:slide|local={{ duration: 350 }}>
+    <Alert
+      on:close={() => (alertMsg = '')}
+      type="error"
+      title="Uh oh!"
+      content={alertMsg} />
+  </div>
+{/if}
 
 <div class="w-full max-w-md mx-auto">
   <div class="px-8 pt-6 pb-8 mb-4 bg-white rounded shadow-md">
