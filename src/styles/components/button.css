@@ -1,5 +1,10 @@
 .btn {
-  @apply inline-block font-bold py-2 px-4 rounded no-underline;
+  /* @apply inline-block px-4 py-2 font-bold no-underline rounded; */
+  @apply px-4 py-2 font-bold rounded;
+}
+
+.btn:focus {
+  @apply shadow-outline outline-none;
 }
 
 .btn:disabled {
@@ -7,9 +12,9 @@
 }
 
 .btn-primary {
-  @apply bg-blue-500 text-white;
+  @apply text-white bg-blue-500;
 }
 
 .btn-primary:hover {
-  @apply bg-blue-600;
+  @apply bg-blue-700;
 }

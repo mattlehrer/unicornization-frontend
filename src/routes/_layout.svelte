@@ -1,11 +1,10 @@
 <script>
-  // import { stores } from '@sapper/app';
-
-  // const { preloading } = stores();
-
-  // console.log('Preloading', preloading);
-
-  // export let segment;
+  import Nav from '../components/nav.svelte';
+  export let segment;
 </script>
 
-<slot />
+<Nav {segment} />
+
+<main class="mx-2 my-4 overflow-hidden md:mx-16 md:my-8">
+  <slot />
+</main>

@@ -34,8 +34,10 @@
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
+    "node-fetch": "^2.6.0",
     "polka": "^0.5.2",
-    "sirv": "^0.4.6"
+    "sirv": "^0.4.6",
+    "validator": "^13.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.0",

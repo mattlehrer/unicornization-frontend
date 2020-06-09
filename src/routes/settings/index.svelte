@@ -1,0 +1,177 @@
+<script>
+  import { stores } from '@sapper/app';
+  import { onMount } from 'svelte';
+  import isUUID from 'validator/es/lib/isUUID';
+  import isEmail from 'validator/es/lib/isEmail';
+  import Alert from '../../components/alert.svelte';
+  import fetch from 'node-fetch';
+
+  const { session } = stores();
+  const apiBaseUrl = process.env.API_BASE_URL;
+
+  let mounted = false;
+  let usernameIsUUID = false;
+  let username = $session.user.username;
+  let email = $session.user.email;
+  let password;
+  let newPassword;
+  let reenterNewPassword;
+
+  // TODO: if email is falsy, ask user for email address
+  fetch(apiBaseUrl + '/me', {
+    method: 'GET',
+    mode: 'cors',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      // 'Content-Type': 'application/json',
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      ({ username, email } = data);
+      if (isUUID(username)) {
+        usernameIsUUID = true;
+        username = '';
+      }
+    })
+    .catch((err) => console.log({ err }));
+
+  onMount(async () => {
+    if (!$session.user) {
+      window.location.href = '/signup';
+    } else {
+      if (isUUID(username)) {
+        usernameIsUUID = true;
+        username = '';
+      }
+      mounted = true;
+    }
+  });
+
+  let handleSubmit = async function (event) {
+    if (!event.target.checkValidity()) {
+      return;
+    }
+
+    const response = await fetch(apiBaseUrl + '/me', {
+      method: 'PATCH',
+      mode: 'cors',
+      credentials: 'include',
+      headers: {
+        // Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username,
+        email,
+        oldPassword: password,
+        newPassword,
+      }),
+    }).catch((err) => console.log({ err }));
+    console.log({ response });
+    if (response.ok) {
+      usernameIsUUID = isUUID(username || $session.user.username);
+    }
+  };
+
+  $: validate =
+    (password && newPassword && newPassword === reenterNewPassword) ||
+    (email && isEmail(email) && email !== $session.user.email) ||
+    (usernameIsUUID && username) ||
+    (username && username !== $session.user.username);
+</script>
+
+{#if mounted}
+  {#if usernameIsUUID}
+    <div class="w-full max-w-md mx-auto my-6">
+      <Alert
+        type="warn"
+        title="Heads up!"
+        content="Please pick a username to set up a profile." />
+    </div>
+  {/if}
+
+  <div class="w-full max-w-md mx-auto">
+    <div class="px-8 pt-6 pb-8 mb-4 bg-white rounded shadow-md">
+      <form on:submit|preventDefault={handleSubmit}>
+        <div class="mb-4">
+          <label
+            class="block mb-2 text-sm font-bold text-gray-700"
+            for="username">
+            Username
+          </label>
+          <input
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded
+            shadow appearance-none focus:outline-none focus:shadow-outline"
+            id="username"
+            type="text"
+            placeholder="Username"
+            bind:value={username} />
+        </div>
+        <div class="mb-4">
+          <label class="block mb-2 text-sm font-bold text-gray-700" for="email">
+            Email
+          </label>
+          <input
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded
+            shadow appearance-none focus:outline-none focus:shadow-outline"
+            id="email"
+            type="text"
+            placeholder="Email"
+            bind:value={email} />
+        </div>
+        <div class="mb-6">
+          <label
+            class="block mb-2 text-sm font-bold text-gray-700"
+            for="password">
+            Current Password
+          </label>
+          <input
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded
+            shadow appearance-none focus:outline-none focus:shadow-outline"
+            id="password"
+            type="password"
+            placeholder="******************"
+            bind:value={password} />
+        </div>
+        <div class="mb-6">
+          <label
+            class="block mb-2 text-sm font-bold text-gray-700"
+            for="newPassword">
+            New Password
+          </label>
+          <input
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded
+            shadow appearance-none focus:outline-none focus:shadow-outline"
+            id="newPassword"
+            type="password"
+            placeholder="******************"
+            bind:value={newPassword} />
+        </div>
+        <div class="mb-6">
+          <label
+            class="block mb-2 text-sm font-bold text-gray-700"
+            for="reenterNewPassword">
+            Reenter New Password
+          </label>
+          <input
+            class="w-full px-3 py-2 leading-tight text-gray-700 border rounded
+            shadow appearance-none focus:outline-none focus:shadow-outline"
+            id="reenterNewPassword"
+            type="password"
+            placeholder="******************"
+            bind:value={reenterNewPassword} />
+        </div>
+        <div class="flex items-center">
+          <button
+            class="btn btn-primary btn-primary:hover btn:focus"
+            disabled={!validate}
+            type="submit">
+            Update Settings
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{/if}

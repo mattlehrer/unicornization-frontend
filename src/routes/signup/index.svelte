@@ -1,9 +1,8 @@
 <script>
-  // import { stores } from '@sapper/app';
-  // const { session } = stores();
   const apiBaseUrl = process.env.API_BASE_URL;
 
   let username = '';
+  let email = '';
   let password;
 
   export let handleSubmit = async function (event) {
@@ -11,7 +10,7 @@
       return;
     }
 
-    const response = await fetch(process.env.API_BASE_URL + '/auth/signin', {
+    const response = await fetch(process.env.API_BASE_URL + '/auth/signup', {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',
@@ -19,7 +18,7 @@
         // Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, email, password }),
     }).catch((err) => console.log({ err }));
     console.log({ response });
     if (response.ok) window.location.href = 'login/success';
@@ -43,6 +42,18 @@
           placeholder="Username"
           bind:value={username} />
       </div>
+      <div class="mb-4">
+        <label class="block mb-2 text-sm font-bold text-gray-700" for="email">
+          Email
+        </label>
+        <input
+          class="w-full px-3 py-2 leading-tight text-gray-700 border rounded
+          shadow appearance-none focus:outline-none focus:shadow-outline"
+          id="email"
+          type="text"
+          placeholder="Email"
+          bind:value={email} />
+      </div>
       <div class="mb-6">
         <label
           class="block mb-2 text-sm font-bold text-gray-700"
@@ -57,22 +68,23 @@
           placeholder="******************"
           bind:value={password} />
       </div>
-      <div class="flex items-center justify-between">
+      <div class="flex flex-row items-center">
         <button
-          class="btn btn-primary btn-primary:hover btn:focus"
+          class="flex-shrink-0 btn btn-primary btn-primary:hover btn:focus"
           type="submit">
-          Sign In
+          Sign Up
         </button>
-        <a
-          class="inline-block text-sm font-bold text-blue-500 align-baseline
-          hover:text-blue-800"
-          href="/forgotpassword">
-          Forgot Password?
-        </a>
+        <div class="ml-5 text-sm">
+          By signing up, you agree to our
+          <a href="/terms">terms of service</a>
+          and
+          <a href="/privacy">privacy policy</a>
+          .
+        </div>
       </div>
     </form>
 
-    <h2 class="mt-10 mb-2 h2">Or Login With</h2>
+    <h2 class="mt-10 mb-2 h2">Or Sign Up With</h2>
     <div class="flex flex-wrap justify-between">
       <a class="mt-2 mb-5 btn btn-primary" href="{apiBaseUrl}/auth/google">
         Google
