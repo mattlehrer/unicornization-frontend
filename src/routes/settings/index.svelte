@@ -1,48 +1,53 @@
 <script>
+  import * as animateScroll from 'svelte-scrollto';
   import { slide } from 'svelte/transition';
   import { stores } from '@sapper/app';
   import { onMount } from 'svelte';
   import isUUID from 'validator/es/lib/isUUID';
   import isEmail from 'validator/es/lib/isEmail';
   import Alert from '../../components/alert.svelte';
-  import fetch from 'node-fetch';
 
   const { session } = stores();
   const apiBaseUrl = process.env.API_BASE_URL;
 
   let mounted = false;
   let shouldUsernameUUIDAlert = false;
+  let saved = false;
   let username = $session.user.username;
   let email = $session.user.email;
+  let user;
   let password;
   let newPassword;
   let reenterNewPassword;
+  let alertMsg = '';
 
   // TODO: if email is falsy, ask user for email address
-  fetch(apiBaseUrl + '/me', {
-    method: 'GET',
-    mode: 'cors',
-    credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      // 'Content-Type': 'application/json',
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data);
-      ({ username, email } = data);
-      if (username && isUUID(username)) {
-        shouldUsernameUUIDAlert = true;
-        username = '';
-      }
-    })
-    .catch((err) => console.log({ err }));
 
   onMount(async () => {
     if (!$session.user) {
       window.location.href = '/signup';
     } else {
+      fetch(apiBaseUrl + '/me', {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+          // 'Content-Type': 'application/json',
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log('SETTINGS', data);
+          user = data;
+          ({ username, email } = user);
+          if (username && isUUID(username)) {
+            shouldUsernameUUIDAlert = true;
+            username = '';
+          }
+        })
+        .catch((err) => console.log('SETTINGS ERROR', { err }));
+
       if (username && isUUID(username)) {
         shouldUsernameUUIDAlert = true;
         username = '';
@@ -74,7 +79,13 @@
     console.log({ response });
     if (response.ok) {
       shouldUsernameUUIDAlert = isUUID(username || $session.user.username);
+      saved = true;
+    } else {
+      const error = await response.json();
+      console.log(error);
+      alertMsg = error.detail;
     }
+    animateScroll.scrollToTop({ duration: 300 });
   };
 
   $: validate =
@@ -82,6 +93,16 @@
     (email && isEmail(email) && email !== $session.user.email) ||
     (username && username !== $session.user.username);
 </script>
+
+{#if alertMsg}
+  <div class="w-full max-w-md mx-auto my-6" out:slide|local={{ duration: 350 }}>
+    <Alert
+      on:close={() => (alertMsg = '')}
+      type="error"
+      title="Uh oh!"
+      content={alertMsg} />
+  </div>
+{/if}
 
 {#if mounted}
   {#if shouldUsernameUUIDAlert}
@@ -93,6 +114,17 @@
         type="warn"
         title="Heads up!"
         content="Please pick a username to set up a profile." />
+    </div>
+  {/if}
+  {#if saved}
+    <div
+      class="w-full max-w-md mx-auto my-6"
+      out:slide|local={{ duration: 350 }}>
+      <Alert
+        on:close={() => (saved = false)}
+        type="success"
+        title="That worked."
+        content="Your changes have been saved." />
     </div>
   {/if}
 
@@ -176,6 +208,44 @@
           </button>
         </div>
       </form>
+
+      {#if user}
+        <h2 class="mt-5 h2">Link your accounts</h2>
+
+        <div class="flex flex-wrap justify-between">
+          {#if !user.google}
+            <a
+              class="mt-2 mb-5 text-gray-100 bg-gray-600 btn"
+              href="{apiBaseUrl}/auth/google">
+              Google
+            </a>
+          {/if}
+
+          {#if !user.facebook}
+            <a
+              class="mt-2 mb-5 text-gray-100 bg-gray-600 btn"
+              href="{apiBaseUrl}/auth/facebook">
+              Facebook
+            </a>
+          {/if}
+
+          {#if !user.github}
+            <a
+              class="mt-2 mb-5 text-gray-100 bg-gray-600 btn"
+              href="{apiBaseUrl}/auth/github">
+              Github
+            </a>
+          {/if}
+
+          {#if !user.twitter}
+            <a
+              class="mt-2 mb-5 text-gray-100 bg-gray-600 btn"
+              href="{apiBaseUrl}/auth/twitter">
+              Twitter
+            </a>
+          {/if}
+        </div>
+      {/if}
     </div>
   </div>
 {/if}
