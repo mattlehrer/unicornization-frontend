@@ -31,7 +31,6 @@
     console.log({ response });
     if (response.ok) window.location.href = '/';
     else {
-      // TODO: deal with errors; dup username; dup email; other
       const error = await response.json();
       console.log(error);
       alertMsg = error.detail;
