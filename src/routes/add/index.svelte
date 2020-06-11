@@ -1,21 +1,23 @@
 <script>
+  import { slide } from 'svelte/transition';
   import { stores } from '@sapper/app';
   const { session } = stores();
   import { onMount } from 'svelte';
+  import Alert from '../../components/alert.svelte';
   import { apiBaseUrl } from '../../utils/api';
 
+  let domain = '';
   let mounted = false;
+  let domainAdded = false;
+  let errMsg = '';
 
   onMount(() => {
     if (!$session.user) {
-      window.location.href = '/signup';
-      // TODO: add flash
+      window.location.href = '/signin';
     } else {
       mounted = true;
     }
   });
-
-  let domain = '';
 
   export let handleSubmit = async function (event) {
     if (!event.target.checkValidity()) {
@@ -30,14 +32,46 @@
         // Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ domain }),
+      body: JSON.stringify({ name: domain }),
     }).catch((err) => console.log({ err }));
     console.log({ response });
-    // if (response.ok) TODO: Flash domain added
+    if (response.ok) {
+      domainAdded = true;
+      domain = '';
+    } else {
+      const error = await response.json();
+      // console.log(error);
+      errMsg = error.detail;
+    }
   };
 </script>
 
 {#if mounted}
+
+  {#if domainAdded}
+    <div
+      class="w-full max-w-md mx-auto my-6"
+      out:slide|local={{ duration: 350 }}>
+      <Alert
+        on:close={() => {
+          domainAdded = false;
+        }}
+        type="success"
+        title="Domain added!"
+        content="We'll keep an eye out for traffic. Want to add another?" />
+    </div>
+  {/if}
+  {#if errMsg}
+    <div
+      class="w-full max-w-md mx-auto my-6"
+      out:slide|local={{ duration: 350 }}>
+      <Alert
+        on:close={() => (errMsg = '')}
+        type="error"
+        title="Uh oh!"
+        content={errMsg} />
+    </div>
+  {/if}
   <div class="w-full max-w-md mx-auto">
     <div class="px-8 pt-6 pb-8 mb-4 bg-white rounded shadow-md">
       <form on:submit|preventDefault={handleSubmit}>
