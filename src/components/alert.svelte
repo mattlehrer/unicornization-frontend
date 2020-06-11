@@ -42,8 +42,8 @@
   rounded relative"
   role="alert">
   <strong class="font-bold">{title}</strong>
-  <p class="inline pr-4">{content}</p>
-  <span on:click={close} class="absolute top-0 bottom-0 right-0 px-4 py-3">
+  <p class="inline pr-5">{content}</p>
+  <span on:click={close} class="absolute top-0 bottom-0 right-0 px-3 py-3">
     <svg
       class="fill-current h-6 w-6 text-{color}-500"
       role="button"
