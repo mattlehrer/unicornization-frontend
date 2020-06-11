@@ -1,6 +1,7 @@
 <script>
   import Alert from '../../components/alert.svelte';
   import { slide } from 'svelte/transition';
+  import { apiBaseUrl } from '../../utils/api';
 
   let email = '';
   let sent = false;
@@ -11,7 +12,8 @@
     }
 
     const response = await fetch(
-      process.env.API_BASE_URL + '/auth/forgot-password',
+      `
+      ${apiBaseUrl}/auth/forgot-password`,
       {
         method: 'POST',
         mode: 'cors',

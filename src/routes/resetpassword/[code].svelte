@@ -10,6 +10,7 @@
   import Alert from '../../components/alert.svelte';
   import { slide } from 'svelte/transition';
   import { passwordRule, isStrongPassword } from '../../utils/password';
+  import { apiBaseUrl } from '../../utils/api';
 
   export let code;
 
@@ -25,18 +26,15 @@
     }
     console.log({ code, newPassword });
 
-    const response = await fetch(
-      process.env.API_BASE_URL + '/auth/reset-password/',
-      {
-        method: 'POST',
-        mode: 'cors',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code, newPassword }),
-      }
-    ).catch((err) => console.log({ err }));
+    const response = await fetch(`${apiBaseUrl}/auth/reset-password/`, {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code, newPassword }),
+    }).catch((err) => console.log({ err }));
     console.log({ response });
     if (response.ok) {
       resOk = true;

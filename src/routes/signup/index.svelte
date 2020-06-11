@@ -3,8 +3,7 @@
   import * as animateScroll from 'svelte-scrollto';
   import Alert from '../../components/alert.svelte';
   import { passwordRule, isStrongPassword } from '../../utils/password';
-
-  const apiBaseUrl = process.env.API_BASE_URL;
+  import { apiBaseUrl } from '../../utils/api';
 
   let username;
   let email;
@@ -18,7 +17,7 @@
       return;
     }
 
-    const response = await fetch(process.env.API_BASE_URL + '/auth/signup', {
+    const response = await fetch(`${apiBaseUrl}/auth/signup`, {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',

@@ -2,6 +2,7 @@
   import { stores } from '@sapper/app';
   const { session } = stores();
   import { onMount } from 'svelte';
+  import { apiBaseUrl } from '../../utils/api';
 
   let mounted = false;
 
@@ -14,8 +15,6 @@
     }
   });
 
-  const apiBaseUrl = process.env.API_BASE_URL;
-
   let domain = '';
 
   export let handleSubmit = async function (event) {
@@ -23,7 +22,7 @@
       return;
     }
 
-    const response = await fetch(apiBaseUrl + '/domain', {
+    const response = await fetch(`${apiBaseUrl}/domain`, {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',

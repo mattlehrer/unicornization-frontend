@@ -6,9 +6,9 @@
   import isUUID from 'validator/es/lib/isUUID';
   import isEmail from 'validator/es/lib/isEmail';
   import Alert from '../../components/alert.svelte';
+  import { apiBaseUrl } from '../../utils/api';
 
   const { session } = stores();
-  const apiBaseUrl = process.env.API_BASE_URL;
 
   let mounted = false;
   let shouldUsernameUUIDAlert = false;
@@ -61,7 +61,7 @@
       return;
     }
 
-    const response = await fetch(apiBaseUrl + '/me', {
+    const response = await fetch(`${apiBaseUrl}/me`, {
       method: 'PATCH',
       mode: 'cors',
       credentials: 'include',

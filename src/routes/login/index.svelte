@@ -3,9 +3,9 @@
   import Alert from '../../components/alert.svelte';
   import { onMount } from 'svelte';
   import { stores } from '@sapper/app';
+  import { apiBaseUrl } from '../../utils/api';
 
   const { session } = stores();
-  const apiBaseUrl = process.env.API_BASE_URL;
 
   let mounted = false;
   let loginFail = false;
@@ -17,7 +17,7 @@
       return;
     }
 
-    const response = await fetch(process.env.API_BASE_URL + '/auth/signin', {
+    const response = await fetch(`${apiBaseUrl}/auth/signin`, {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',

@@ -1,6 +1,8 @@
 <script>
+  import { apiBaseUrl } from '../../utils/api';
+
   let logout = async function () {
-    const response = await fetch(process.env.API_BASE_URL + '/auth/logout', {
+    const response = await fetch(`${apiBaseUrl}/auth/logout`, {
       mode: 'cors',
       credentials: 'include',
       headers: {
