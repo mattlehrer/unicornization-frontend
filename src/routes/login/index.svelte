@@ -27,17 +27,20 @@
       body: JSON.stringify({ username, password }),
     }).catch((err) => console.log({ err }));
     console.log({ response });
-    if (response.ok) window.location.href = '/';
-    else {
+    if (response.ok) {
+      window.location.href = '/';
+    } else {
       loginFail = true;
     }
   };
 
   onMount(async () => {
     if ($session.user) {
+      window.close();
       window.location.href = '/';
+    } else {
+      mounted = true;
     }
-    mounted = true;
   });
 </script>
 
