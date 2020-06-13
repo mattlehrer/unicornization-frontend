@@ -26,6 +26,7 @@ polka()
       return sapper.middleware({
         session: (req, res) => ({
           user: profile,
+          host: req.headers.host.split(':')[0],
         }),
       })(req, res, next);
     }
