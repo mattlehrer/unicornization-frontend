@@ -2,7 +2,7 @@
   export async function preload(page) {
     const { host } = page;
 
-    console.log({ host });
+    // console.log({ host });
     let name = host.split(':')[0];
     return { name };
   }
