@@ -4,6 +4,8 @@
   const { session } = stores();
 
   const user = $session.user;
+  let parentWindow;
+  let domain;
 
   const loginWindow = () => {
     const params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=600,height=300,left=100,top=100`;
@@ -14,20 +16,37 @@
     );
   };
 
-  export let handleIdeaSubmit = async function (event) {
-    console.log(user);
+  let messageHandler = async function (event) {
+    if (event.data) {
+      parentWindow = event.source;
+      if (event.data.domain) {
+        domain = event.data.domain;
+      }
+      if (event.data.idea)
+        return handleIdeaSubmit({
+          headline: event.data.idea.headline,
+          domainId: domain.id,
+        });
+      else if (event.data.vote)
+        return handleVote({
+          type: event.data.vote.type,
+          ideaId: event.data.vote.ideaId,
+        });
+    }
+  };
 
+  let handleIdeaSubmit = async function ({ headline, domainId }) {
     if (!user) {
       loginWindow();
       return;
     }
 
-    const { idea, domain } = event.data;
     const ideaDto = {
-      headline: idea,
-      domain,
+      headline,
+      domainId,
     };
-    const response = await fetch(`${apiBaseUrl}/idea`, {
+    const ideaSent = {};
+    await fetch(`${apiBaseUrl}/idea`, {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',
@@ -35,16 +54,57 @@
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(ideaDto),
-    }).catch((err) => console.log({ err }));
-    console.log({ response });
-    if (response.ok) {
-      // alert: posted!
-      console.log(response);
-    } else {
-      // alert: failed!
-      console.log(response);
+    })
+      .then((res) => {
+        ideaSent.status = res.status;
+        ideaSent.statusText = res.statusText;
+        return res.json();
+      })
+      .then((res) => {
+        ideaSent.newIdea = res;
+      })
+      .catch((err) => {
+        console.log({ err });
+        ideaSent.error = err;
+      });
+    parentWindow.postMessage(ideaSent, `http://${domain.name}:3001`);
+  };
+
+  let handleVote = async function ({ type, ideaId }) {
+    if (!user) {
+      loginWindow();
+      return;
     }
-    console.log(await response.json());
+
+    const voteDto = {
+      type,
+      ideaId,
+    };
+    const voteSent = {};
+    await fetch(`${apiBaseUrl}/vote`, {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(voteDto),
+    })
+      .then((res) => {
+        voteSent.status = res.status;
+        voteSent.statusText = res.statusText;
+        if (res.ok) return res.json();
+        if (res.status === 304) true;
+        return null;
+      })
+      .then((res) => {
+        voteSent.newVote = res;
+      })
+      .catch((err) => {
+        console.log({ err });
+        voteSent.error = err;
+      });
+    parentWindow.postMessage(voteSent, `http://${domain.name}:3001`);
   };
 </script>
 
@@ -58,7 +118,7 @@
   }
 </style>
 
-<svelte:window on:message={handleIdeaSubmit} />
+<svelte:window on:message={messageHandler} />
 
 <div class="flex flex-row-reverse">
 
