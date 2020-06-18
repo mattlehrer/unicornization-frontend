@@ -80,7 +80,7 @@
     }
   };
 
-  let fetchIdeas = async function () {
+  const fetchIdeas = async function () {
     await fetch(`${apiBaseUrl}/idea/domain/${domain.id}`, {
       method: 'GET',
       mode: 'cors',
@@ -101,7 +101,7 @@
       .catch((err) => console.log('IDEAS ERROR', { err }));
   };
 
-  let fetchVotes = async function () {
+  const fetchVotes = async function () {
     await fetch(`${apiBaseUrl}/vote/domain/${domain.id}`, {
       method: 'GET',
       mode: 'cors',
