@@ -3,12 +3,13 @@
 
   export let id;
   export let headline;
-  export let votes;
+  // export let votes;
+  export let score;
   export let voted;
 
   const dispatch = createEventDispatcher();
 
-  $: score = votes.reduce((acc, curr) => acc + curr.type, 0);
+  // $: score = votes.reduce((acc, curr) => acc + curr.type, 0);
 </script>
 
 <div class="flex flex-row items-center w-full">
