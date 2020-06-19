@@ -7,7 +7,7 @@ import sirv from 'sirv';
 import config from './config';
 import './styles/index.css';
 
-const { PORT, NODE_ENV } = process.env;
+const { FRONTEND_PORT: PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
 
 polka()
