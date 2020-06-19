@@ -11,11 +11,12 @@
 <script>
   import Landing from './_landing.svelte';
   import Domain from '../components/domain/domain.svelte';
+  import { isMainSite } from '../utils/frontend-url';
 
   export let name;
 </script>
 
-{#if ['localhost', '127.0.0.1'].includes(name)}
+{#if isMainSite(name)}
   <Landing />
 {:else}
   <Domain {name} />

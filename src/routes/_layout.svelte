@@ -1,12 +1,13 @@
 <script>
   import { stores } from '@sapper/app';
   import Nav from '../components/nav.svelte';
+  import { isMainSite } from '../utils/frontend-url';
 
   const { session } = stores();
   export let segment;
 </script>
 
-{#if ['localhost', '127.0.0.1'].includes($session.host)}
+{#if isMainSite($session.host)}
   <Nav {segment} />
 {/if}
 

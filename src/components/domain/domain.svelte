@@ -13,6 +13,7 @@
   let iframe;
   let ideaPosted = false;
   let ideaPostError = false;
+  const frontendBaseUrl = process.env.FRONTEND_BASE_URL;
 
   onMount(async () => {
     await fetch(`${apiBaseUrl}/domain/${name}`, {
@@ -46,17 +47,14 @@
     console.log('forwarding idea', headline);
 
     iframe = document.getElementById('unicornization').contentWindow;
-    iframe.postMessage({ idea: { headline }, domain }, 'http://localhost:3001');
+    iframe.postMessage({ idea: { headline }, domain }, frontendBaseUrl);
   };
 
   let forwardVote = async function (event) {
     console.log('forwarding vote', event.detail);
     const { type, ideaId } = event.detail;
     iframe = document.getElementById('unicornization').contentWindow;
-    iframe.postMessage(
-      { vote: { type, ideaId }, domain },
-      'http://localhost:3001'
-    );
+    iframe.postMessage({ vote: { type, ideaId }, domain }, `{frontendBaseUrl}`);
   };
 
   let handleMsgResponse = async function (event) {
@@ -141,7 +139,7 @@
   title="Unicornization"
   name="unicornization"
   id="unicornization"
-  src="http://localhost:3001/frame" />
+  src={`${frontendBaseUrl}/frame`} />
 
 {#if ideaPosted}
   <div

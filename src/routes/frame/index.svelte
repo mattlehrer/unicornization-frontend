@@ -3,17 +3,20 @@
   import { apiBaseUrl } from '../../utils/api';
   const { session } = stores();
 
+  const frontendBaseUrl = process.env.FRONTEND_BASE_URL;
   const user = $session.user;
   let parentWindow;
   let domain;
 
   const loginWindow = () => {
     const params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=600,height=300,left=100,top=100`;
-    window.open(
-      'http://localhost:3001/login',
-      'Log in to Unicornization',
-      params
-    );
+    window.open(`${frontendBaseUrl}/login`, 'Log in to Unicornization', params);
+  };
+
+  const reply = (obj) => {
+    const portOrUndefined = frontendBaseUrl.split(':')[2];
+    const port = portOrUndefined ? portOrUndefined : '';
+    parentWindow.postMessage(obj, `http://${domain.name}${port}`);
   };
 
   let messageHandler = async function (event) {
@@ -67,7 +70,7 @@
         console.log({ err });
         ideaSent.error = err;
       });
-    parentWindow.postMessage(ideaSent, `http://${domain.name}:3001`);
+    reply(ideaSent);
   };
 
   let handleVote = async function ({ type, ideaId }) {
@@ -104,7 +107,7 @@
         console.log({ err });
         voteSent.error = err;
       });
-    parentWindow.postMessage(voteSent, `http://${domain.name}:3001`);
+    reply(voteSent);
   };
 </script>
 
@@ -123,7 +126,7 @@
 <div class="flex flex-row-reverse">
 
   <a
-    href="http://localhost:3001"
+    href={frontendBaseUrl}
     target="_blank"
     class="mx-5 text-3xl text-right -translate-x-4 flip-x">
     🦄
