@@ -7,7 +7,7 @@ import sirv from 'sirv';
 import config from './config';
 import './styles/index.css';
 
-const { FRONTEND_PORT: PORT, NODE_ENV } = process.env;
+const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
 
 polka()
@@ -22,10 +22,10 @@ polka()
           Buffer.from(req.cookies[config.COOKIE_NAME], 'base64').toString()
         );
       const token = parsed ? parsed.jwt : undefined;
-      const profile = token ? jwt.decode(token) : false;
+      const user = token ? jwt.decode(token) : false;
       return sapper.middleware({
         session: (req, res) => ({
-          user: profile,
+          user,
           host: req.headers.host.split(':')[0],
         }),
       })(req, res, next);
