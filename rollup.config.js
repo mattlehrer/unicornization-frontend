@@ -3,7 +3,6 @@ import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
 import resolve from 'rollup-plugin-node-resolve';
-import postcss from 'rollup-plugin-postcss';
 import replace from 'rollup-plugin-replace';
 import svelte from 'rollup-plugin-svelte';
 import { terser } from 'rollup-plugin-terser';
@@ -41,13 +40,14 @@ const onwarn = (warning, onwarn) =>
 const dedupe = (importee) =>
   importee === 'svelte' || importee.startsWith('svelte/');
 
-const purgecss = require('@fullhuman/postcss-purgecss')({
-  // Specify the paths to all of the template files in your project
-  content: ['./src/**/*.html', './src/**/*.svelte', './src/**/*.css'],
+// const purgecss = require('@fullhuman/postcss-purgecss')({
+//   // Specify the paths to all of the template files in your project
+//   content: ['./src/**/*.html', './src/**/*.svelte', './src/**/*.css'],
 
-  // Include any special characters you're using in this regular expression
-  defaultExtractor: (content) => content.match(/[A-Za-z0-9-_:/]+/g) || [],
-});
+//   // Include any special characters you're using in this regular expression
+//   // defaultExtractor: (content) => content.match(/[\w-/:]+(?<!:)/g) || [],
+//   defaultExtractor: (content) => content.match(/[A-Za-z0-9-_:/]+/g) || [],
+// });
 
 export default {
   client: {
@@ -116,21 +116,21 @@ export default {
         generate: 'ssr',
         dev,
       }),
-      postcss({
-        extract: 'static/global.css',
-        plugins: [
-          require('postcss-import'),
-          require('tailwindcss'), // See tailwind.config.js
-          require('autoprefixer'),
-          require('postcss-fail-on-warn'),
-          // Do not purge the CSS in dev mode to be able to play with classes in the browser dev-tools.
-          !dev && purgecss,
-          !dev &&
-            require('cssnano')({
-              preset: 'default',
-            }),
-        ].filter(Boolean),
-      }),
+      // postcss({
+      //   extract: path.resolve('static/global.css'),
+      //   plugins: [
+      //     require('postcss-import'),
+      //     require('tailwindcss'), // See tailwind.config.js
+      //     require('autoprefixer'),
+      //     require('postcss-fail-on-warn'),
+      //     // Do not purge the CSS in dev mode to be able to play with classes in the browser dev-tools.
+      //     !dev && purgecss,
+      //     !dev &&
+      //       require('cssnano')({
+      //         preset: 'default',
+      //       }),
+      //   ].filter(Boolean),
+      // }),
       resolve({
         dedupe,
       }),

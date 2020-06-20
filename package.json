@@ -7,10 +7,13 @@
     "url": "https://github.com/mattlehrer/unicornization-frontend"
   },
   "scripts": {
-    "dev": "sapper dev",
-    "build": "sapper build --legacy",
-    "export": "sapper export --legacy",
+    "dev": "run-p start:dev watch:tailwind",
+    "build": "npm run build:tailwind && sapper build --legacy",
+    "watch:tailwind": "postcss src/styles/index.css -o static/global.css -w",
+    "build:tailwind": "NODE_ENV=production postcss src/styles/index.css -o static/global.css",
+    "export": "npm run build:tailwind && sapper export --legacy",
     "start": "node __sapper__/build",
+    "start:dev": "sapper dev",
     "all": "npm run build && npm run start",
     "update": "ncu -u && npm install && git add package.json package-lock.json && git commit -m 'Update package.json'",
     "precommit": "node -v && lint-staged"
@@ -35,6 +38,7 @@
     "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
     "polka": "^0.5.2",
+    "postcss-cli": "^7.1.1",
     "sirv": "^1.0.1",
     "validator": "^13.1.1"
   },
