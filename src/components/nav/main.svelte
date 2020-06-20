@@ -1,6 +1,10 @@
 <script>
+  import { stores } from '@sapper/app';
+  const { session } = stores();
+
   export let segment;
-  export let user;
+
+  let user = $session.user;
 </script>
 
 <style>

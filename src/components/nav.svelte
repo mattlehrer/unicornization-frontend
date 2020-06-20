@@ -5,11 +5,11 @@
   import { isMainSite } from '../utils/frontend-url';
 
   export let segment;
-  let user = $session.user;
+  const frontendBaseUrl = process.env.FRONTEND_BASE_URL;
 </script>
 
 {#if segment === 'frame'}
   <!-- nothing -->
-{:else if isMainSite($session.host)}
-  <Main {segment} {user} />
+{:else if isMainSite(frontendBaseUrl, $session.host)}
+  <Main {segment} />
 {/if}

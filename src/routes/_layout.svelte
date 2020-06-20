@@ -5,9 +5,10 @@
 
   const { session } = stores();
   export let segment;
+  const frontendBaseUrl = process.env.FRONTEND_BASE_URL;
 </script>
 
-{#if isMainSite($session.host)}
+{#if isMainSite(frontendBaseUrl, $session.host)}
   <Nav {segment} />
 {/if}
 

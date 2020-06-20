@@ -13,10 +13,11 @@
   import Domain from '../components/domain/domain.svelte';
   import { isMainSite } from '../utils/frontend-url';
 
+  const frontendBaseUrl = process.env.FRONTEND_BASE_URL;
   export let name;
 </script>
 
-{#if isMainSite(name)}
+{#if isMainSite(frontendBaseUrl, name)}
   <Landing />
 {:else}
   <Domain {name} />

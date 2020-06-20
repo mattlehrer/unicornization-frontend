@@ -1,6 +1,4 @@
-const frontendBaseUrl = process.env.FRONTEND_BASE_URL;
-
-export const isMainSite = (host) => {
+export const isMainSite = (frontendBaseUrl, host) => {
   if (frontendBaseUrl.includes('unicornization')) {
     return ['unicornization.com', 'www.unicornization.com'].includes(host);
   }

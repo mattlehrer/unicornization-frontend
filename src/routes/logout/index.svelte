@@ -1,5 +1,8 @@
 <script>
+  import { stores } from '@sapper/app';
   import { apiBaseUrl } from '../../utils/api';
+
+  const { session } = stores();
 
   let logout = async function () {
     const response = await fetch(`${apiBaseUrl}/auth/logout`, {
@@ -11,7 +14,13 @@
       },
     }).catch((err) => console.log({ err }));
     console.log({ response });
-    if (response.ok) window.location.href = '/';
+    session.update((session) => {
+      return {
+        ...session,
+        user: null,
+      };
+    });
+    window.location.href = '/';
   };
   logout();
 </script>
