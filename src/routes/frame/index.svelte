@@ -16,7 +16,10 @@
   const reply = (obj) => {
     const portOrUndefined = frontendBaseUrl.split(':')[2];
     const port = portOrUndefined ? portOrUndefined : '';
-    parentWindow.postMessage(obj, `http://${domain.name}${port}`);
+    parentWindow.postMessage(
+      obj,
+      `${frontendBaseUrl.split(':')[0]}://${domain.name}${port}`
+    );
   };
 
   let messageHandler = async function (event) {
