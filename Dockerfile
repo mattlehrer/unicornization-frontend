@@ -1,5 +1,5 @@
 FROM node:12 AS builder
-WORKDIR /app
+WORKDIR /usr/src/app
 COPY ./package.json ./
 RUN npm install
 COPY . .
@@ -9,8 +9,8 @@ RUN npm run build
 FROM node:12
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
-WORKDIR /app
-COPY --from=builder /app ./
+WORKDIR /usr/src/app
+COPY --from=builder /usr/srcapp ./
 CMD ["npm", "run", "start"]
 
 # FROM node:lts As development
