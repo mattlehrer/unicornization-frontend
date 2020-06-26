@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "run-p start:dev watch:tailwind",
+    "prebuild": "rm -rf ./__sapper__/build",
     "build": "npm run build:tailwind && sapper build --legacy",
     "watch:tailwind": "postcss src/styles/index.css -o static/global.css -w",
     "build:tailwind": "NODE_ENV=production postcss src/styles/index.css -o static/global.css",
